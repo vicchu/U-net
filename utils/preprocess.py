@@ -1,4 +1,3 @@
-import os
 from tqdm import tqdm
 import numpy as np
 import cv2
@@ -64,10 +63,11 @@ def data_augment(xb, yb):
     return xb, yb
 
 
-image_sets = ['data/train/1.png', 'data/train/2.png']
-label_sets = ['data/train/1_class.png', 'data/train/2_class.png']
 
-def creat_dataset():
+
+def creat_train(time):
+    image_sets = ['data/train/1.png', 'data/train/2.png']
+    label_sets = ['data/train/1_class.png', 'data/train/2_class.png']
     print('creating dataset...')
     g_count = 0
     for i in range(2):
@@ -77,7 +77,7 @@ def creat_dataset():
         num_w = (src_img.shape[1] - 256) // 128
         for h in tqdm(range(num_h)):
             for w in range(num_w):
-                for times in range(8):
+                for times in range(time):
                     sub_image = src_img[(h * 128):(h * 128 + 256), (w * 128):(w * 128 + 256), :]
                     sub_label = label_img[(h * 128):(h * 128 + 256), (w * 128):(w * 128 + 256)]
                     sub_image,sub_label = data_augment(sub_image, sub_label)
@@ -85,7 +85,7 @@ def creat_dataset():
                     cv2.imwrite(('dataset/train/labels/%05d.png' % g_count), sub_label)
                     g_count += 1
 
-def creat_testdataset():
+def creat_test():
     g_count = 0
     src_img = cv2.imread('data/test/test3.png')
     label_img = cv2.imread('data/test/test3_labels_8bits.png',cv2.IMREAD_GRAYSCALE)
@@ -98,24 +98,3 @@ def creat_testdataset():
             cv2.imwrite(('dataset/test/images/%05d.png' % g_count), sub_image)
             cv2.imwrite(('dataset/test/labels/%05d.png' % g_count), sub_label)
             g_count += 1
-
-
-def generatepathlist(train_path='dataset/train/',
-                     test_path='dataset/test/'):
-    with open('train.txt','w') as f:
-        list = os.listdir(train_path+'images/')
-        for i in range(len(list)):
-            image_path = train_path + 'images/' + list[i]
-            label_path = train_path + 'labels/' + list[i]
-            f.write(image_path+' '+label_path+'\n')
-    with open('test.txt','w') as f:
-        list = os.listdir(test_path+'images/')
-        for i in range(len(list)):
-            image_path = test_path + 'images/' + list[i]
-            label_path = test_path + 'labels/' + list[i]
-            f.write(image_path+' '+label_path+'\n')
-
-if __name__ == '__main__':
-    creat_dataset()
-    creat_testdataset()
-    generatepathlist()

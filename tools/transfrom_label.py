@@ -1,5 +1,4 @@
 from scipy import misc
-from tqdm import tqdm
 import numpy as np
 import cv2
 wrong_label = misc.imread('data/test/test3_labels_8bits.png')

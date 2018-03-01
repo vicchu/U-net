@@ -1,50 +1,50 @@
 from scipy import misc
-from tqdm import tqdm
+from utils.preprocess import *
 import numpy as np
-
+import os
 
 
 '将生成batch等多个方法封装成一个类'
 class Dataprovider():
     '初始化'
     def __init__(self,
-                 train_list='train.txt',
-                 test_list='test.txt',):
-        self.train_list = train_list
-        self.test_list = test_list
-        self.x_tr, self.y_tr = self.read_train()
-        self.x_test, self.y_test = self.read_test()
+                 time,
+                 x_tr_path='dataset/train/images/',
+                 y_tr_path='dataset/train/labels/',
+                 x_test_path = 'dataset/test/images/',
+                 y_test_path = 'dataset/test/labels/',
+                 ):
+        creat_train(time)
+        creat_test()
+        self.x_tr, self.y_tr = self.read_train(x_tr_path,y_tr_path)
+        self.x_test, self.y_test = self.read_test(x_test_path,y_test_path)
         self.batch_offset_tr = 0
         self.batch_offset_test = 0
-        self.y_tr = np.expand_dims(self.y_tr,-1)
-        self.y_test = np.expand_dims(self.y_test,-1)
 
-    def read_train(self):
+
+    def read_train(self, x_tr_path, y_tr_path):
         x_tr = []
         y_tr = []
-        list = []
-        with open(self.train_list) as f:
-            for lines in f:
-                list.append(lines)
-        for i in tqdm(list):
-            x_tr.append(self.read(i.split()[0]))
-            y_tr.append(self.read(i.split()[1]))
-
+        list = os.listdir(x_tr_path)
+        for index in range(len(list)):
+            x_dir = x_tr_path+list[index]
+            y_dir = y_tr_path+list[index]
+            x_tr.append(self.transfrom(x_dir))
+            y_tr.append(np.expand_dims(self.transfrom(y_dir),-1))
         return np.array(x_tr), np.array(y_tr)
 
-    def read_test(self):
+    def read_test(self, x_test_path,y_test_path):
         x_test = []
         y_test = []
-        list = []
-        with open(self.test_list) as f:
-            for lines in f:
-                list.append(lines)
-        for i in tqdm(list):
-            x_test.append(self.read(i.split()[0]))
-            y_test.append(self.read(i.split()[1]))
+        list = os.listdir(x_test_path)
+        for index in range(len(list)):
+            x_dir = x_test_path+list[index]
+            y_dir = y_test_path+list[index]
+            x_test.append(self.transfrom(x_dir))
+            y_test.append(np.expand_dims(self.transfrom(y_dir),-1))
         return np.array(x_test), np.array(y_test)
 
-    def read(self, path):
+    def transfrom(self, path):
         return misc.imread(path)
 
     def get_train(self):
@@ -52,7 +52,6 @@ class Dataprovider():
 
     def get_test(self):
         return self.x_test, self.y_test
-
 
 
     def next_batch_tr(self, batch_size):

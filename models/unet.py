@@ -2,7 +2,7 @@ from models.layers import weight_variable,bias_variable,\
     conv2d_activtion,max_pool,deconv2d_concat,conv2d
 import tensorflow as tf
 
-def unet(x, batch_norm=True, n_class=5, features=64):
+def unet(x, batch_norm=True, n_class=5, features=16):
     '卷积之后->norm->elu'
     x = x/255
 
