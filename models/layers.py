@@ -20,7 +20,9 @@ def norm(x):
 
 
 def weight_variable(shape, stddev=0.1):
-    return tf.Variable(tf.truncated_normal(shape, stddev=stddev))
+    var = tf.Variable(tf.truncated_normal(shape, stddev=stddev))
+    tf.add_to_collection('losses',tf.contrib.layers.l2_regularizer(0.5)(var))
+    return var
 
 
 def weight_variable_devonc(shape, stddev=0.1):
@@ -48,12 +50,7 @@ def max_pool(x, n=2):
 
 
 def crop_and_concat(x1, x2):
-    # x1_shape = tf.shape(x1)
-    # x2_shape = tf.shape(x2)
-    # # offsets for the top left corner of the crop
-    # offsets = [0, (x1_shape[1] - x2_shape[1]) // 2, (x1_shape[2] - x2_shape[2]) // 2, 0]
-    # size = [-1, x2_shape[1], x2_shape[2], -1]
-    # x1_crop = tf.slice(x1, offsets, size)
+
     return tf.concat([x1, x2], 3)
 
 

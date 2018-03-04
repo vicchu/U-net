@@ -6,12 +6,16 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
 
 class Model(object):
-    def __init__(self, dataprovider, loss_name='cross_entropy'):
+    def __init__(self, dataprovider, loss_name='cross_entropy', **model_kw):
         self.dataprovider = dataprovider
         self.size = 256
         self.x = tf.placeholder(tf.float32, [None, self.size, self.size, 3])
         self.y = tf.placeholder(tf.int32, [None, self.size, self.size, 1])
-        self.logits = unet(x=self.x,batch_norm=True,n_class=5,features=16)
+        self.logits = unet(x=self.x,
+                           batch_norm=model_kw['batch_norm'],
+                           n_class=model_kw['n_class'],
+                           features=model_kw['features']
+                           )
         self.predict = tf.argmax(self.logits, axis=3)
         self.loss = self.get_loss(loss_name)
         self.total_acc = self.get_acc()
@@ -33,8 +37,13 @@ class Model(object):
             loss = focal_loss(
                 prediction_tensor=self.logits,
                 target_tensor=y)
+            tf.add_to_collection('losses',loss)
+            loss = tf.add_n(tf.get_collection('losses'))
             return loss
+
+
     def get_acc(self):
+
         y_flat = tf.reshape(self.y,[-1])
         pre_flat = tf.reshape(self.predict,[-1])
         mat = tf.confusion_matrix(
