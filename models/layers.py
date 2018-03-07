@@ -21,7 +21,7 @@ def norm(x):
 
 def weight_variable(shape, stddev=0.1):
     var = tf.Variable(tf.truncated_normal(shape, stddev=stddev))
-    tf.add_to_collection('losses',tf.contrib.layers.l2_regularizer(0.5)(var))
+    # tf.add_to_collection('losses',tf.contrib.layers.l2_regularizer(1e-4)(var))
     return var
 
 

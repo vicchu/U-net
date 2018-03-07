@@ -13,9 +13,11 @@ class Dataprovider():
                  y_tr_path='dataset/train/labels/',
                  x_test_path = 'dataset/test/images/',
                  y_test_path = 'dataset/test/labels/',
+                 inin_dataset = True
                  ):
-        creat_train(time)
-        creat_test()
+        if inin_dataset:
+            creat_train(time)
+            creat_test()
         self.x_tr, self.y_tr = self.read_train(x_tr_path,y_tr_path)
         self.x_test, self.y_test = self.read_test(x_test_path,y_test_path)
         self.batch_offset_tr = 0
@@ -26,7 +28,7 @@ class Dataprovider():
         x_tr = []
         y_tr = []
         list = os.listdir(x_tr_path)
-        for index in range(len(list)):
+        for index in tqdm(range(len(list))):
             x_dir = x_tr_path+list[index]
             y_dir = y_tr_path+list[index]
             x_tr.append(self.transfrom(x_dir))

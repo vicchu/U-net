@@ -2,19 +2,21 @@ from models.unet import *
 from models.loss import focal_loss
 import logging
 import tensorflow as tf
+import keras.preprocessing.image
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
 
 class Model(object):
-    def __init__(self, dataprovider, loss_name='cross_entropy', **model_kw):
+    def __init__(self, dataprovider, loss_name='cross_entropy',
+                 batch_norm=True, n_class=5, features=16):
         self.dataprovider = dataprovider
         self.size = 256
         self.x = tf.placeholder(tf.float32, [None, self.size, self.size, 3])
         self.y = tf.placeholder(tf.int32, [None, self.size, self.size, 1])
         self.logits = unet(x=self.x,
-                           batch_norm=model_kw['batch_norm'],
-                           n_class=model_kw['n_class'],
-                           features=model_kw['features']
+                           batch_norm=batch_norm,
+                           n_class=n_class,
+                           features=features
                            )
         self.predict = tf.argmax(self.logits, axis=3)
         self.loss = self.get_loss(loss_name)
@@ -37,8 +39,8 @@ class Model(object):
             loss = focal_loss(
                 prediction_tensor=self.logits,
                 target_tensor=y)
-            tf.add_to_collection('losses',loss)
-            loss = tf.add_n(tf.get_collection('losses'))
+            # tf.add_to_collection('losses',loss)
+            # loss = tf.add_n(tf.get_collection('losses'))
             return loss
 
 
