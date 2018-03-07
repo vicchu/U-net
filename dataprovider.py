@@ -13,9 +13,9 @@ class Dataprovider():
                  y_tr_path='dataset/train/labels/',
                  x_test_path = 'dataset/test/images/',
                  y_test_path = 'dataset/test/labels/',
-                 inin_dataset = True
+                 init_dataset = True
                  ):
-        if inin_dataset:
+        if init_dataset:
             creat_train(time)
             creat_test()
         self.x_tr, self.y_tr = self.read_train(x_tr_path,y_tr_path)

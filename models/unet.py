@@ -1,6 +1,7 @@
 from models.layers import weight_variable,bias_variable,\
     conv2d_activtion,max_pool,deconv2d_concat,conv2d
 import tensorflow as tf
+import tensorflow.contrib.slim as slim
 
 def unet(x, batch_norm=True, n_class=5, features=16):
     '卷积之后->norm->elu'
@@ -49,14 +50,11 @@ def unet(x, batch_norm=True, n_class=5, features=16):
         crop_and_concat4 = net
         net = max_pool(net)
 
-    features = features*2
+
+
     with tf.name_scope('5.unit'):
-        w5_1 = weight_variable([3, 3, features//2, features])
-        b5_1 = bias_variable([features])
-        net = conv2d_activtion(net, w5_1, b5_1, batch_norm)
-        w5_2 = weight_variable([3, 3, features, features])
-        b5_2 = bias_variable([features])
-        net = conv2d_activtion(net, w5_2, b5_2, batch_norm)
+        net = pyramid_pooling_module(net, features, [2, 4, 8, 16])
+        features = features*2
 
     'up'
     features = features//2
@@ -112,3 +110,25 @@ def unet(x, batch_norm=True, n_class=5, features=16):
         b_out = bias_variable([n_class])
         output_map = conv2d(net, w_out, b_out)
     return output_map
+
+
+
+def pyramid_pooling(inputs, poolsize, depth):
+    dims = inputs.get_shape().dims
+    out_height, out_width = dims[1].value, dims[2].value
+
+    pool1 = slim.avg_pool2d(inputs, poolsize, stride=poolsize)
+    conv1 = slim.conv2d(pool1, depth, [1, 1], stride=1)
+    output = tf.image.resize_bilinear(conv1, [out_height, out_width])
+    return output
+
+
+def pyramid_pooling_module(input, features, poolsizes):
+    level_maps = [input]
+    for poolsize in poolsizes:
+        depth = features // 4
+        level_map = pyramid_pooling(input, poolsize, depth)
+        level_maps.append(level_map)
+    net = tf.concat(axis=3,values=level_maps)
+    return net
+

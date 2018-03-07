@@ -10,7 +10,7 @@ if __name__ == '__main__':
         'features':16,
     }
 
-    data = Dataprovider(time=5,inin_dataset=False)
+    data = Dataprovider(time=5,init_dataset=False)
     model = net.Model(dataprovider=data,loss_name='focal_loss',**model_args)
     train = net.Train(dataprovider=data, model=model, batch_size=32)
     train.train(100000)
