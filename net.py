@@ -2,7 +2,6 @@ from models.unet import *
 from models.loss import focal_loss
 import logging
 import tensorflow as tf
-import keras.preprocessing.image
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
 
@@ -73,9 +72,9 @@ class Train(object):
 
 
     def initialize(self, sess):
-        self.learning_rate = tf.Variable(0.001)
         tf.summary.scalar('loss',self.model.loss)
         tf.summary.scalar('total_acc',self.model.total_acc)
+        self.learning_rate = tf.Variable(0.001)
         self.summary_op = tf.summary.merge_all()
         self.train_writer = tf.summary.FileWriter('log/train', sess.graph)
         self.test_writer = tf.summary.FileWriter('log/test')
