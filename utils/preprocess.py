@@ -50,13 +50,10 @@ def data_augment(xb, yb):
     if np.random.random() < 0.25:
         xb = cv2.flip(xb, 1)
         yb = cv2.flip(yb, 1)
-
     if np.random.random() < 0.25:
         xb = random_gamma_transform(xb, 1.0)
-
     if np.random.random() < 0.25:
         xb = blur(xb)
-
     if np.random.random() < 0.2:
         xb = add_noise(xb)
 
@@ -70,7 +67,7 @@ def creat_train(time):
     label_sets = ['data/train/1_class.png', 'data/train/2_class.png']
     print('creating dataset...')
     g_count = 0
-    for i in range(2):
+    for i in tqdm(range(2)):
         src_img = cv2.imread(image_sets[i])
         label_img = cv2.imread(label_sets[i], cv2.IMREAD_GRAYSCALE)
         num_h = (src_img.shape[0] - 256) // 128

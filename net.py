@@ -53,8 +53,9 @@ class Model(object):
             num_classes=5
         )
         total_acc = tf.reduce_sum(tf.diag_part(mat)) / tf.reduce_sum(mat)
-
         return total_acc
+
+
 
     def save(self, sess, model_path):
         saver = tf.train.Saver()

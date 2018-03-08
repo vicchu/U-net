@@ -3,10 +3,16 @@ import tensorflow as tf
 
 def conv2d_activtion(x, w, b, batchnorm=True):
     net = conv2d(x, w, b)
-
     if batchnorm == True:
         net = norm(net)
-    return tf.nn.elu(net)
+    return tf.nn.relu(net)
+
+def conv2d_atrous(x, w, b, batchnorm=True):
+    net = tf.nn.atrous_conv2d(x, w, padding='SAME',rate=2)
+    net = net + b
+    if batchnorm:
+        net = norm(net)
+    return tf.nn.relu(net)
 
 
 def deconv2d_concat(x, w, b, concat):

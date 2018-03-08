@@ -1,3 +1,5 @@
+"转换初赛图与复赛图的类别"
+
 from scipy import misc
 import numpy as np
 import cv2
